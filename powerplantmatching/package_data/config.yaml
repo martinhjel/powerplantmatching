@@ -23,6 +23,7 @@ matching_sources:
   - BEYONDCOAL
   - WIKIPEDIA
   - GGPT
+  - NVE
 
 fully_included_sources:
   # Make individual queries for the datasets
@@ -152,6 +153,10 @@ GGPT:
   reliability_score: 4
   fn: Global-Gas-Plant-Tracker-Aug-2022.xlsx
   url: https://github.com/pz-max/gem-powerplant-data/raw/main/Global-Gas-Plant-Tracker-Aug-2022.xlsx
+NVE:
+  reliability_score: 4
+  url: https://www.nve.no/umbraco/api/Powerplant/GetHydroPowerPlantsInOperation
+  fn: NVE.csv
 
 # ---------------------------------------------------------------------------- #
 #                             Data Structure Config                            #

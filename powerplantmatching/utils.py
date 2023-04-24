@@ -402,7 +402,27 @@ def convert_alpha2_to_country(df):
     return convert_to_short_name(df.assign(Country=df.Country.replace(dic)))
 
 
-def convert_to_short_name(df):
+def convert_to_short_name(df: pd.DataFrame):
+    """
+    Convert full country names to ISO 3166-1 alpha-2 country codes.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with a 'Country' column
+
+    Returns
+    -------
+    pandas DataFrame with shortened country names
+
+    Raises
+    ------
+    ValueError
+        If 'Country' column is not present in input DataFrame.
+    """
+    if "Country" not in df.columns:
+        raise ValueError("Input DataFrame must have a 'Country' column.")
+
     df = get_obj_if_Acc(df)
     countries = df.Country.dropna().unique()
 

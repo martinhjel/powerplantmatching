@@ -1687,3 +1687,59 @@ def EXTERNAL_DATABASE(raw=False, update=True, config=None):
     df = df.pipe(set_column_name, "EXTERNAL_DATABASE").pipe(config_filter, config)
 
     return df
+
+
+def NVE(raw=False, update=False, config=None):
+    """
+    Importer for the Norwegian Water and Resource Directorate (NVE) hydropower database.
+
+    Parameters
+    ----------
+    raw : boolean, default False
+        Whether to return the original dataset
+    update: bool, default False
+        Whether to update the data from the url.
+    config : dict, default None
+        Add custom specific configuration,
+        e.g. powerplantmatching.config.get_config(target_countries='Italy'),
+        defaults to powerplantmatching.config.get_config()
+    """
+    config = get_config() if config is None else config
+
+    fn = get_raw_file("NVE", update=update, config=config)
+    df = pd.read_json(fn)
+
+    if raw:
+        return df
+
+    RENAME_COLUMNS = {
+        "Navn": "Name",
+        "MaksYtelse": "Capacity",
+        "ForsteUtnyttelseAvFalletDato": "DateIn",
+        "VannKVType": "Technology",
+    }
+
+    technology_dict = {"Kraftverk": "Reservoir", "Pumpekraftverk": "Pumped Storage"}
+
+    df["Country"] = "Norway"
+
+    df = (
+        df.rename(columns=RENAME_COLUMNS)
+        .pipe(clean_name)
+        .pipe(set_column_name, "NVE")
+        .pipe(convert_to_short_name)
+        .dropna(subset="Capacity")
+    )
+
+    df["FuelType"] = "Hydro"
+    df["DateIn"] = pd.to_numeric(pd.to_datetime(df.DateIn), errors="coerce")
+    df["lat"] = np.nan
+    df["lon"] = np.nan
+
+    df["ProjectID"] = "NVE"
+    df["Technology"].replace(technology_dict, inplace=True)
+    df["Set"] = "PP"
+    df = df[df.columns.intersection(config.get("target_columns"))]
+    df = df.pipe(config_filter, config)
+
+    return df

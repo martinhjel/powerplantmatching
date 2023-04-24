@@ -55,3 +55,8 @@ def test_OPSD_VRE():
 # Enable after release of v0.5.0
 # def test_powerplants():
 #     pm.powerplants(from_url=True)
+
+
+def test_NVE():
+    df = pm.data.NVE()
+    assert not df.empty
